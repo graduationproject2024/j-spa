@@ -7,56 +7,18 @@ export function trackFunnel(eventName) {
 }
 
 /**
- * Smooth Scroll Engine (Lenis & GSAP-inspired inertia scrolling)
- * Smoothly interpolates window scroll positions with RAF easing for couture fluidity.
+ * Native GPU-Accelerated Smooth Scroll
+ * Leaves scroll handling completely to the browser compositor thread for 120fps buttery performance.
  */
 export function initSmoothScroll() {
-  if (typeof window === 'undefined') return;
-  if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) return;
-  if (window.__jbLenisInit) return;
-  window.__jbLenisInit = true;
-
-  let currentY = window.scrollY;
-  let targetY = window.scrollY;
-  let isMoving = false;
-
-  const onWheel = (e) => {
-    // Allow native scrolling inside nested scrollable elements (modals, dialogs, drawers)
-    if (e.target?.closest?.('textarea, select, [data-native-scroll], dialog[open], .ops-sidebar, .wheel-modal-shell')) return;
-    e.preventDefault();
-    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    targetY = Math.max(0, Math.min(maxScroll, targetY + e.deltaY * 1.08));
-    if (!isMoving) {
-      isMoving = true;
-      requestAnimationFrame(updateScroll);
-    }
-  };
-
-  const updateScroll = () => {
-    const diff = targetY - currentY;
-    if (Math.abs(diff) > 0.5) {
-      currentY += diff * 0.12;
-      window.scrollTo(0, Math.round(currentY));
-      requestAnimationFrame(updateScroll);
-    } else {
-      currentY = targetY;
-      window.scrollTo(0, targetY);
-      isMoving = false;
-    }
-  };
-
-  window.addEventListener('wheel', onWheel, { passive: false });
-  window.addEventListener('scroll', () => {
-    if (!isMoving) {
-      currentY = window.scrollY;
-      targetY = window.scrollY;
-    }
-  }, { passive: true });
+  if (typeof document !== 'undefined' && document.documentElement) {
+    document.documentElement.style.scrollBehavior = 'smooth';
+  }
 }
 
 /**
- * 21st.dev & Impeccable-inspired luxury scroll stagger reveals + interactive spotlight glow.
- * Progressive enhancement: elements stay visible even if IntersectionObserver is unavailable.
+ * 21st.dev & Impeccable-inspired luxury scroll reveals.
+ * Uses lightweight IntersectionObserver with zero scroll hijacking.
  */
 export function initScrollReveals() {
   initSmoothScroll();
@@ -75,11 +37,11 @@ export function initScrollReveals() {
           }
         });
       },
-      { threshold: 0.06, rootMargin: '0px 0px -24px 0px' },
+      { threshold: 0.05, rootMargin: '0px 0px 50px 0px' },
     );
 
     els.forEach((el, idx) => {
-      el.style.setProperty('--reveal-delay', `${Math.min(idx * 55, 280)}ms`);
+      el.style.setProperty('--reveal-delay', `${Math.min(idx * 40, 240)}ms`);
       const rect = el.getBoundingClientRect();
       if (rect.top < window.innerHeight * 0.95) {
         el.classList.add('is-revealed');
@@ -89,25 +51,31 @@ export function initScrollReveals() {
       }
     });
 
-    // Safety auto-reveal after 500ms so nothing ever remains hidden
+    // Safety auto-reveal after 400ms so nothing stays hidden
     setTimeout(() => {
       document.querySelectorAll('[data-reveal].will-reveal').forEach((el) => {
         el.classList.add('is-revealed');
       });
-    }, 500);
+    }, 400);
   }
 
-  // Interactive cursor spotlight on luxury cards (21st.dev Spotlight Card effect)
+  // RAF-throttled Spotlight effect (zero frame drop)
   if (!reduceMotion && !window.__jbSpotlightBound) {
     window.__jbSpotlightBound = true;
+    let ticking = false;
     document.addEventListener(
       'pointermove',
       (e) => {
-        const card = e.target?.closest?.('.card, .service-card, .package-card, .jb-path, .jb-reward-card, .cta-band, .gift-live-card, .hero-reference-card');
-        if (!card) return;
-        const rect = card.getBoundingClientRect();
-        card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
-        card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          const card = e.target?.closest?.('.card, .service-card, .package-card, .jb-path, .jb-reward-card, .cta-band, .gift-live-card, .hero-reference-card');
+          if (!card) return;
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+          card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+        });
       },
       { passive: true },
     );
@@ -115,8 +83,7 @@ export function initScrollReveals() {
 }
 
 /**
- * Luxury Metallic Rose-Gold Petals Membership Medallion (replaces primitive SVG flower).
- * Uses the official J Beauty Spa brand emblem framed in an orbital rose-gold progress ring.
+ * Luxury Metallic Rose-Gold Petals Membership Medallion
  */
 export function renderSignatureBloomSVG(filledCount = 4, totalPetals = 8, lightMode = true, userBalance = null) {
   let balance = Number.isFinite(userBalance) ? userBalance : (filledCount > 8 ? filledCount : null);
