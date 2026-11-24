@@ -351,13 +351,12 @@ export function groupBookingPage() {
               <span class="eyebrow" style="color:var(--rose-gold-deep)">✦ ${t('توثيق سداد العربون', 'DEPOSIT VERIFICATION')} ✦</span>
               <h3 style="margin-top:6px;font-size:17px">${t('إرفاق إيصال سداد العربون', 'Upload Deposit Receipt')}</h3>
               <p class="muted" style="font-size:13.5px">${t('ارفعي إيصال التحويل البنكي هنا ليتم تثبيت المناسبة وإصدار العقد الرسمي فوراً.', 'Upload bank transfer receipt to lock the date and issue the contract.')}</p>
-              ${
-                receiptDone
-                  ? `<div class="success" style="margin-top:12px">
+              ${receiptDone
+        ? `<div class="success" style="margin-top:12px">
                        <strong>✓ ${t('تم استلام إيصال العربون بنجاح!', 'Deposit Receipt Received!')}</strong>
                        <p style="margin:4px 0 0;font-size:13px">${t('وصل الإيصال لمنصة الإدارة ويتم مراجعته لتثبيت فريق الأخصائيات.', 'Your deposit receipt is being reviewed to finalize specialist allocation.')}</p>
                      </div>`
-                  : `
+        : `
                     <form id="group-receipt-upload-form" data-group-id="${esc(gr.id || gr.reference)}" style="margin-top:12px;display:grid;gap:10px">
                       <div id="group-receipt-error" role="alert"></div>
                       <label class="field" style="margin:0">
@@ -379,7 +378,7 @@ export function groupBookingPage() {
                       <button type="submit" class="btn sage" style="width:100%">📤 ${t('إرسال إيصال العربون للإدارة', 'Submit Deposit Receipt')}</button>
                     </form>
                   `
-              }
+      }
             </div>
           </div>
 
@@ -959,9 +958,8 @@ export function giftsPage() {
           </div>
 
           <div class="hero-actions" style="justify-content:center;gap:12px;flex-wrap:wrap">
-            ${
-              isApproved
-                ? `<button type="button" class="btn shimmer-btn" id="download-gift-card-png">🖼️ ${t('تحميل بطاقة الإهداء الفاخرة كصورة', 'Download Luxury Gift Card PNG')}</button>
+            ${isApproved
+        ? `<button type="button" class="btn shimmer-btn" id="download-gift-card-png">🖼️ ${t('تحميل بطاقة الإهداء الفاخرة كصورة', 'Download Luxury Gift Card PNG')}</button>
                    <a class="btn" href="${esc(r.share_whatsapp_url || r.whatsapp_url)}" target="_blank" rel="noopener noreferrer" style="background:linear-gradient(135deg,#25D366,#128C7E);color:#fff">💌 ${t('إرسال البطاقة للمستفيدة عبر واتساب', 'Send Gift to Recipient on WhatsApp')}</a>
                    <button type="button" class="btn light" id="copy-gift-code-btn" data-code="${esc(giftCode)}">📋 ${t('نسخ كود الإهداء', 'Copy Gift Code')}</button>`
         : `<span class="badge pending" style="padding:10px 16px;font-size:13.5px">⏳ ${t('يتم إصدار كود الإهداء وتفعيله بعد التحقق من سداد التحويل البنكي لدى الإدارة', 'Gift code will be activated and issued once staff verifies your bank transfer')}</span>`

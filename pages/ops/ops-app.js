@@ -173,6 +173,7 @@ function bindSharedChrome() {
 function bindWorkspaceChrome(d) {
   const closeDrawer = () => {
     opsState.drawerOpen = false;
+      closeDrawer();
     $ops('#ops-sidebar')?.classList.remove('open');
     $ops('#ops-backdrop')?.classList.remove('open');
   };

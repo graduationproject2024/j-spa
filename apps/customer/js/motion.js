@@ -7,10 +7,59 @@ export function trackFunnel(eventName) {
 }
 
 /**
- * 21st.dev-inspired luxury scroll stagger reveals + interactive cursor spotlight glow.
+ * Smooth Scroll Engine (Lenis & GSAP-inspired inertia scrolling)
+ * Smoothly interpolates window scroll positions with RAF easing for couture fluidity.
+ */
+export function initSmoothScroll() {
+  if (typeof window === 'undefined') return;
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) return;
+  if (window.__jbLenisInit) return;
+  window.__jbLenisInit = true;
+
+  let currentY = window.scrollY;
+  let targetY = window.scrollY;
+  let isMoving = false;
+
+  const onWheel = (e) => {
+    // Allow native scrolling inside nested scrollable elements (modals, dialogs, drawers)
+    if (e.target?.closest?.('textarea, select, [data-native-scroll], dialog[open], .ops-sidebar, .wheel-modal-shell')) return;
+    e.preventDefault();
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    targetY = Math.max(0, Math.min(maxScroll, targetY + e.deltaY * 1.08));
+    if (!isMoving) {
+      isMoving = true;
+      requestAnimationFrame(updateScroll);
+    }
+  };
+
+  const updateScroll = () => {
+    const diff = targetY - currentY;
+    if (Math.abs(diff) > 0.5) {
+      currentY += diff * 0.12;
+      window.scrollTo(0, Math.round(currentY));
+      requestAnimationFrame(updateScroll);
+    } else {
+      currentY = targetY;
+      window.scrollTo(0, targetY);
+      isMoving = false;
+    }
+  };
+
+  window.addEventListener('wheel', onWheel, { passive: false });
+  window.addEventListener('scroll', () => {
+    if (!isMoving) {
+      currentY = window.scrollY;
+      targetY = window.scrollY;
+    }
+  }, { passive: true });
+}
+
+/**
+ * 21st.dev & Impeccable-inspired luxury scroll stagger reveals + interactive spotlight glow.
  * Progressive enhancement: elements stay visible even if IntersectionObserver is unavailable.
  */
 export function initScrollReveals() {
+  initSmoothScroll();
   const els = [...document.querySelectorAll('[data-reveal]')];
   const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
 
@@ -54,7 +103,7 @@ export function initScrollReveals() {
     document.addEventListener(
       'pointermove',
       (e) => {
-        const card = e.target?.closest?.('.card, .service-card, .package-card, .jb-path, .jb-reward-card, .cta-band, .gift-live-card');
+        const card = e.target?.closest?.('.card, .service-card, .package-card, .jb-path, .jb-reward-card, .cta-band, .gift-live-card, .hero-reference-card');
         if (!card) return;
         const rect = card.getBoundingClientRect();
         card.style.setProperty('--mx', `${e.clientX - rect.left}px`);

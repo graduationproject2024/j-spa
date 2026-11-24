@@ -298,7 +298,11 @@ export function pageMetadata(html, pathname, services = [], packages = []) {
     );
 
   if (ssrShell) {
-    if (out.includes('<div id="app"></div>')) {
+    const appOpen = out.indexOf('<div id="app">');
+    const toastOpen = out.indexOf('<div id="toast"');
+    if (appOpen !== -1 && toastOpen !== -1 && toastOpen > appOpen) {
+      out = out.slice(0, appOpen) + `<div id="app">${ssrShell}</div>\n  ` + out.slice(toastOpen);
+    } else if (out.includes('<div id="app"></div>')) {
       out = out.replace('<div id="app"></div>', () => `<div id="app">${ssrShell}</div>`);
     } else {
       out = out.replace(/<div id="app">[\s\S]*?<\/div>/, () => `<div id="app">${ssrShell}</div>`);
