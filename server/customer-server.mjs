@@ -104,9 +104,18 @@ export function createCustomerApp({
       }
 
       if (opsApp) {
-        if (route.startsWith('/api/ops') || route === '/ops' || route.startsWith('/ops/') || /^\/(ar|en)\/ops(\/|$)/.test(route)) {
+        if (route === '/ops' || route === '/ar/ops' || route === '/en/ops') {
+          res.writeHead(301, { Location: `${route}/${url.search}`, 'Cache-Control': 'no-cache' });
+          return res.end();
+        }
+        if (route.startsWith('/api/ops') || route.startsWith('/ops/') || /^\/(ar|en)\/ops\//.test(route) || route === '/ops.css' || route === '/ops-app.js') {
           return await opsApp.handler(req, res);
         }
+      }
+
+      if (['GET', 'HEAD'].includes(method) && /^\/(?:ar|en)?\/?lander\/?$/.test(route)) {
+        res.writeHead(301, { Location: `/${url.search}`, 'Cache-Control': 'no-cache' });
+        return res.end();
       }
 
       if (route === '/robots.txt') {
